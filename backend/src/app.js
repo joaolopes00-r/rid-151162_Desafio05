@@ -6,6 +6,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(livrosRoutes);
+app.use('/livros', livrosRoutes);
 
 module.exports = app;

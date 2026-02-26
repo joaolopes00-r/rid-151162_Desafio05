@@ -1,82 +1,145 @@
-import {useEffect , useState} from 'react'
-import Header from '../../components/Header/Header'
-import "./index.scss"
-import SubmenuLivros from '../../components/SubmenuLivros/SubmenuLivros'
-import { useParams } from 'react-router-dom'
-import { LivrosService } from '../../api/LivrosService'
+import { useEffect, useState } from "react";
+import Header from "../../components/Header/Header";
+import "./index.scss";
+import SubmenuLivros from "../../components/SubmenuLivros/SubmenuLivros";
+import { useParams, useNavigate } from "react-router-dom";
+import { LivrosService } from "../../api/LivrosService";
 
-const LivrosEdicao = () => {  
-  let {livroId} = useParams();
+const LivrosEdicao = () => {
+  const navigate = useNavigate();
+  const params = useParams();
 
-  const [livro, setLivro] = useState([])
+  
+  const id = params.id ?? params.livroId;
 
-  async function getLivro(){
-    const {data} = await LivrosService.getLivro(livroId);
-    setLivro(data)
+  const [livro, setLivro] = useState({
+    id: "",
+    titulo: "",
+    numeroPaginas: "",
+    isbn: "",
+    editora: "",
+  });
+
+  async function getLivro() {
+    if (!id) {
+      alert("ID não informado na URL (rota de edição).");
+      return;
+    }
+
+    try {
+      const { data } = await LivrosService.getLivro(id);
+
+      setLivro({
+        id: data.id,
+        titulo: data.titulo ?? data.title ?? "",
+        numeroPaginas: String(data.numeroPaginas ?? data.pages ?? ""),
+        isbn: data.isbn ?? "",
+        editora: data.editora ?? data.publisher ?? "",
+      });
+    } catch (error) {
+      console.error(error);
+      const status = error?.response?.status;
+      const msg = error?.response?.data?.mensagem;
+      alert(status && msg ? `${status} - ${msg}` : "Erro ao buscar livro");
+    }
   }
 
-  async function editLivro(){
-    const body = {
-        id:Number(livro.id),
-        titulo:livro.titulo,
-        num_paginas: Number(livro.num_paginas),
-        isbn: livro.isbn,
-        editora: livro.editora
-      }
-    if(livro.id!=undefined && livro.id!='' && livro.titulo!=undefined && livro.titulo!='' && livro.num_paginas!=undefined && livro.num_paginas!='' && livro.isbn !=undefined && livro.isbn !='' && livro.editora !=undefined && livro.editora !=''){
-      await LivrosService.updateLivro(Number(livro.id),body)
-      .then(({data})=>{
-        alert(data.mensagem)
-      })
-      .catch(({response:{data,status}})=>{
-        alert(`${status} - ${data}`)      
-      });
-    }  
+  async function editLivro(e) {
+    e.preventDefault();
 
+    if (!id) {
+      alert("ID não informado na URL (rota de edição).");
+      return;
+    }
+
+    try {
+      const body = {
+        
+        titulo: livro.titulo,
+        numeroPaginas: Number(livro.numeroPaginas),
+        isbn: livro.isbn,
+        editora: livro.editora,
+      };
+
+      const { data } = await LivrosService.updateLivro(id, body);
+
+      alert(data?.mensagem ?? "Livro atualizado com sucesso!");
+      navigate("/livros");
+    } catch (error) {
+      console.error(error);
+      const status = error?.response?.status;
+      const msg = error?.response?.data?.mensagem;
+      alert(status && msg ? `${status} - ${msg}` : "Erro ao atualizar livro");
+    }
   }
 
   useEffect(() => {
-    getLivro()    
-  }, [])  
+    getLivro();
+  }, [id]); 
 
   return (
-  <>
-    <Header/>    
-    <SubmenuLivros/>
-    <div className='livrosCadastro'>
-        <h1>Edição de Livros</h1>
-        <div>
-          <form id="formulario">
-            <div className='form-group'>
-              <label>Id</label>
-              <input type="text" disabled required onChange={(event)=>{ setLivro({...livro, id: event.target.value})}} value={livro.id || ''}></input>
-            </div>
-            <div className='form-group'>
-              <label>Titulo</label>
-              <input type="text" required onChange={(event)=>{ setLivro({...livro, titulo: event.target.value})}} value={livro.titulo || ''} ></input>
-            </div>
-            <div className='form-group'>
-              <label>Número de Páginas</label>
-              <input type="text"  required onChange={(event)=>{ setLivro({...livro, num_paginas: event.target.value})}} value={livro.num_paginas || ''}></input>
-            </div>
-            <div className='form-group'>
-              <label>ISBN</label>
-              <input type="text"  required onChange={(event)=>{ setLivro({...livro, isbn: event.target.value})}} value={livro.isbn || ''}></input>
-            </div>
-            <div className='form-group'>
-              <label>Editora</label>
-              <input type="text"  required onChange={(event)=>{ setLivro({...livro, editora: event.target.value})}} value={livro.editora || ''}></input>
-            </div> 
-            <div className='form-group'>
-              <button onClick={()=>{
-              editLivro()
-            }}>Atualizar Livro</button>  
-            </div>                   
-          </form>
-          </div>        
-    </div>
-  </>)
-  
-}
+    <>
+      <Header />
+      <SubmenuLivros />
 
-export default LivrosEdicao
+      <div className="livrosCadastro">
+        <h1>Edição de Livros</h1>
+
+        <form onSubmit={editLivro}>
+          <div className="form-group">
+            <label>Id</label>
+            <input type="text" disabled value={livro.id} />
+          </div>
+
+          <div className="form-group">
+            <label>Título</label>
+            <input
+              type="text"
+              value={livro.titulo}
+              onChange={(e) => setLivro({ ...livro, titulo: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Número de Páginas</label>
+            <input
+              type="number"
+              value={livro.numeroPaginas}
+              onChange={(e) =>
+                setLivro({ ...livro, numeroPaginas: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>ISBN</label>
+            <input
+              type="text"
+              value={livro.isbn}
+              onChange={(e) => setLivro({ ...livro, isbn: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Editora</label>
+            <input
+              type="text"
+              value={livro.editora}
+              onChange={(e) => setLivro({ ...livro, editora: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <button type="submit">Atualizar Livro</button>
+          </div>
+        </form>
+      </div>
+    </>
+  );
+};
+
+export default LivrosEdicao;
