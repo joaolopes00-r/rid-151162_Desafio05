@@ -80,14 +80,17 @@ biblioteca-online/
 Crie o banco e a tabela com o seguinte script:
 
 ```sql
-CREATE DATABASE livros_db;
+CREATE DATABASE biblioteca_db;
 
-CREATE TABLE livros (
-  id SERIAL PRIMARY KEY,
-  titulo VARCHAR(255) NOT NULL,
-  num_paginas INTEGER NOT NULL,
-  isbn VARCHAR(50) NOT NULL,
-  editora VARCHAR(255) NOT NULL
+\c livros_db;
+
+CREATE TABLE IF NOT EXISTS books (
+  id UUID PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  pages INT NOT NULL,
+  isbn VARCHAR(50) NOT NULL UNIQUE,
+  publisher VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -101,7 +104,7 @@ CREATE TABLE livros (
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASSWORD=1234
-DB_NAME=livros_db
+DB_NAME=biblioteca_db
 DB_PORT=5432
 PORT=3000
 ```
