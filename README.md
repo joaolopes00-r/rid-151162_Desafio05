@@ -1,91 +1,52 @@
-# projeto-react-api-node
-Projeto em React com API simples em Node.
-# 📚 Biblioteca Online — API Node.js + React
+# 📚 Biblioteca Online — API + Frontend
 
-Projeto desenvolvido para o desafio de integração **Back-end (Node.js + PostgreSQL)** com **Front-end (React + Vite)**, simulando um sistema de biblioteca online com cadastro, listagem, edição e remoção de livros.
-
----
-
-## 🎯 Objetivo do Projeto
-
-Desenvolver uma **API REST em Node.js** integrada a um **front-end em React**, permitindo a comunicação completa entre cliente e servidor para gerenciamento de livros.
-
-O sistema contempla um **CRUD completo**:
-
-* Criar livros
-* Listar livros
-* Buscar livro por ID
-* Editar livros
-* Deletar livros
+Sistema fullstack de biblioteca online com **Node.js + Express + PostgreSQL** no backend e **React + Vite** no frontend.
+O projeto implementa um CRUD completo de livros com integração ponta a ponta.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🚀 Tecnologias
 
-### 🔙 Back-end
+### Backend
 
 * Node.js
 * Express
 * PostgreSQL
-* pg (node-postgres)
-* dotenv
-* cors
+* UUID (pgcrypto)
+* Nodemon
 
-### 🔜 Front-end
+### Frontend
 
 * React
 * Vite
-* React Router DOM
 * Axios
-* Sass
+* React Router DOM
 
 ---
 
-## 📂 Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
-biblioteca-online/
-│
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   └── livrosController.js
-│   │   ├── routes/
-│   │   │   └── livrosRoutes.js
-│   │   ├── config/
-│   │   │   └── database.js
-│   │   └── server.js
-│   ├── .env
-│   └── package.json
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── LivrosService.js
-│   │   ├── views/
-│   │   ├── components/
-│   │   └── main.jsx
-│   ├── .env
-│   └── package.json
-│
-└── README.md
+/
+├── backend
+└── frontend
 ```
 
 ---
 
-## ⚙️ Configuração do Banco de Dados
+# ⚙️ Configuração do Banco de Dados
 
-### 📌 PostgreSQL
-
-Crie o banco e a tabela com o seguinte script:
+## 1️⃣ Criar banco no PostgreSQL
 
 ```sql
 CREATE DATABASE biblioteca_db;
 
-\c livros_db;
+\c biblioteca_db;
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS books (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(255) NOT NULL,
   pages INT NOT NULL,
   isbn VARCHAR(50) NOT NULL UNIQUE,
@@ -94,34 +55,52 @@ CREATE TABLE IF NOT EXISTS books (
 );
 ```
 
+✅ O ID é gerado automaticamente pelo PostgreSQL.
+
 ---
 
-## 🔐 Variáveis de Ambiente
+# 🔐 Variáveis de Ambiente
 
-### Backend (`backend/.env`)
+## Backend
 
-```env
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=1234
-DB_NAME=biblioteca_db
-DB_PORT=5432
-PORT=3000
+Copie:
+
+```
+backend/.env.example → backend/.env
 ```
 
-### Frontend (`frontend/.env`)
+Exemplo:
 
-```env
+```
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=sua_senha
+DB_NAME=biblioteca_db
+```
+
+---
+
+## Frontend
+
+Copie:
+
+```
+frontend/.env.example → frontend/.env
+```
+
+Exemplo:
+
+```
 VITE_API_URL=http://localhost:3000
 ```
 
-⚠️ Após alterar variáveis de ambiente, reinicie as aplicações.
-
 ---
 
-## ▶️ Como Executar o Projeto
+# ▶️ Como Executar
 
-### 1️⃣ Backend
+## Backend
 
 ```bash
 cd backend
@@ -137,7 +116,7 @@ http://localhost:3000
 
 ---
 
-### 2️⃣ Frontend
+## Frontend
 
 ```bash
 cd frontend
@@ -145,7 +124,7 @@ npm install
 npm run dev
 ```
 
-Aplicação rodando em:
+Frontend em:
 
 ```
 http://localhost:5173
@@ -153,58 +132,129 @@ http://localhost:5173
 
 ---
 
-## 🔗 Rotas da API
+# 🔌 Endpoints da API
 
-### 📘 Livros
+Base URL:
 
-| Método | Rota        | Descrição              |
-| ------ | ----------- | ---------------------- |
-| GET    | /livros     | Lista todos os livros  |
-| GET    | /livros/:id | Busca livro por ID     |
-| POST   | /livros     | Cadastra um novo livro |
-| PUT    | /livros/:id | Atualiza um livro      |
-| DELETE | /livros/:id | Remove um livro        |
+```
+http://localhost:3000/livros
+```
 
-### 📥 Exemplo de Payload (POST / PUT)
+---
+
+## 📥 Listar livros
+
+```
+GET /livros
+```
+
+---
+
+## 🔍 Buscar livro por ID
+
+```
+GET /livros/:id
+```
+
+---
+
+## ➕ Criar livro
+
+```
+POST /livros
+```
+
+### Body
 
 ```json
 {
-  "titulo": "Livro Exemplo",
-  "num_paginas": 250,
+  "title": "Livro Exemplo",
+  "pages": 250,
   "isbn": "123456789",
-  "editora": "Editora Exemplo"
+  "publisher": "Editora Exemplo"
 }
 ```
 
 ---
 
-## 🖥️ Funcionalidades do Front-end
+## ✏️ Atualizar livro
 
-* Tela de listagem de livros
-* Tela de cadastro de livros
-* Tela de edição de livros
-* Exclusão de livros
-* Integração completa com API
-* Campo ID exibido conforme layout (gerado automaticamente pelo banco)
+```
+PUT /livros/:id
+```
 
 ---
 
-## ✅ Critérios Atendidos
+## ❌ Deletar livro
 
-✔ API funcionando localmente
-✔ Rotas GET, POST, PUT e DELETE
-✔ Integração completa Front-end + Back-end
-✔ Persistência de dados com PostgreSQL
-✔ Organização de código e arquitetura
+```
+DELETE /livros/:id
+```
 
 ---
 
-## 🧪 Testes
+# 🧪 Testes rápidos via cURL
 
-As rotas da API podem ser testadas utilizando ferramentas como:
+## Listar
 
-* Insomnia
-* Postman
+```bash
+curl http://localhost:3000/livros
+```
 
+## Criar
 
+```bash
+curl -X POST http://localhost:3000/livros \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Teste","pages":100,"isbn":"111222333","publisher":"XPTO"}'
+```
 
+## Buscar por ID
+
+```bash
+curl http://localhost:3000/livros/<id>
+```
+
+## Atualizar
+
+```bash
+curl -X PUT http://localhost:3000/livros/<id> \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Teste Editado","pages":120,"isbn":"111222333","publisher":"XPTO"}'
+```
+
+## Deletar
+
+```bash
+curl -X DELETE http://localhost:3000/livros/<id>
+```
+
+---
+
+# ✅ Requisitos Atendidos
+
+* ✔ CRUD completo
+* ✔ GET por ID implementado
+* ✔ Integração frontend ↔ backend
+* ✔ UUID automático
+* ✔ Tratamento de erros
+* ✔ Uso de variáveis de ambiente
+* ✔ Projeto executável
+
+---
+
+# 👨‍💻 Autor
+
+João Victor RID-151162
+
+---
+
+# 📌 Observações
+
+* Não versionar arquivos `.env`
+* Usar sempre os `.env.example`
+* Certifique-se de que o PostgreSQL esteja rodando antes de iniciar o backend
+
+---
+
+✅ 
