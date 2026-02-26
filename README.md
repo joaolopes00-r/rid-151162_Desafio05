@@ -213,6 +213,8 @@ curl -X POST http://localhost:3000/livros \
 
 ```bash
 curl http://localhost:3000/livros/<id>
+curl -X PUT http://localhost:3000/livros/<id> ...
+curl -X DELETE http://localhost:3000/livros/<id>
 ```
 
 ## Atualizar
