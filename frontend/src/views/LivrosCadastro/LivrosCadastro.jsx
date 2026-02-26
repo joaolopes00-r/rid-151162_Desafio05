@@ -9,6 +9,7 @@ const LivrosCadastro = () => {
   const navigate = useNavigate()
 
   const [livro, setLivro] = useState({
+    id: '',
     titulo: '',
     numeroPaginas: '',
     isbn: '',
@@ -16,7 +17,7 @@ const LivrosCadastro = () => {
   })
 
   async function createLivro(e) {
-    e?.preventDefault?.()
+    e.preventDefault()
 
     try {
       await LivrosService.createLivro({
@@ -46,6 +47,16 @@ const LivrosCadastro = () => {
         <h1>Cadastro de Livros</h1>
 
         <form onSubmit={createLivro}>
+          <div className='form-group'>
+            <label>Id</label>
+            <input
+              type="text"
+              value={livro.id}
+              disabled
+              placeholder="Gerado automaticamente"
+            />
+          </div>
+
           <div className='form-group'>
             <label>Título</label>
             <input
